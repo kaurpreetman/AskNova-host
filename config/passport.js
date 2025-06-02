@@ -5,7 +5,7 @@ import User from '../models/User.js';
 passport.use(new GitHubStrategy({
   clientID: `${process.env.GITHUB_CLIENT_ID}`,
   clientSecret: `${process.env.GITHUB_CLIENT_SECRET}`,
-  callbackURL: '/auth/github/callback'
+  callbackURL: `${process.env.GITHUB_CALLBACK_URL}`
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     const email = profile.emails && profile.emails.length > 0 ? profile.emails[0].value : '';

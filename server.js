@@ -20,7 +20,7 @@ const app = express();
 const server = http.createServer(app);
 initSocketHandler(server);
 
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.use(cors({ origin: 'https://endearing-pie-c93575.netlify.app', credentials: true }));
 app.use(express.json());
 
 app.use(

@@ -19,17 +19,19 @@ const app = express();
 
 const server = http.createServer(app);
 initSocketHandler(server);
-
+app.set('trust proxy', 1); 
 app.use(cors({ origin: 'https://endearing-pie-c93575.netlify.app', credentials: true }));
 app.use(express.json());
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-  })
-);
+app.use(session({
+  secret: 'yourSecret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: true,           
+    sameSite: 'none'        
+  }
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 

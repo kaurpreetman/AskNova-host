@@ -20,7 +20,7 @@ const app = express();
 const server = http.createServer(app);
 initSocketHandler(server);
 app.set('trust proxy', 1); 
-app.use(cors({ origin: 'https://asknovanew.netlify.app/', credentials: true }));
+app.use(cors({ origin: 'https://asknovanew.netlify.app', credentials: true }));
 app.use(express.json());
 
 app.use(session({

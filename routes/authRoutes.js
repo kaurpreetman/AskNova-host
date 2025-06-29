@@ -9,7 +9,7 @@ router.get('/github', passport.authenticate('github', { scope: ['user:email'] })
 router.get('/github/callback',
   passport.authenticate('github', {
     failureRedirect: '/login',
-    successRedirect: 'https://endearing-pie-c93575.netlify.app'
+    successRedirect: 'https://asknovanew.netlify.app'
   })
 );
 

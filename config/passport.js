@@ -8,7 +8,15 @@ passport.use(new GitHubStrategy({
   callbackURL: `${process.env.GITHUB_CALLBACK_URL}`
 }, async (accessToken, refreshToken, profile, done) => {
   try {
-    const email = profile.emails && profile.emails.length > 0 ? profile.emails[0].value : '';
+    const { data: emails } = await axios.get('https://api.github.com/user/emails', {
+  headers: {
+    Authorization: `token ${accessToken}`,
+    Accept: 'application/vnd.github+json'
+  }
+});
+
+const primaryEmail = emails.find(email => email.primary && email.verified);
+const email = primaryEmail ? primaryEmail.email : '';
     const avatarUrl = profile.photos && profile.photos.length > 0 ? profile.photos[0].value : '';
 
     let user = await User.findOne({ githubId: profile.id });

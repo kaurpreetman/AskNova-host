@@ -4,12 +4,21 @@ import { getCurrentUser, logoutUser } from '../controllers/authController.js';
 
 const router = express.Router();
 
-router.get('/github', passport.authenticate('github', { scope: ['user:email'] }));
+import rateLimit from 'express-rate-limit';
+
+const githubLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  message: 'Too many GitHub login attempts, please try again later.'
+});
+
+router.get('/github', githubLimiter, passport.authenticate('github', { scope: ['user:email'] }));
+
 
 router.get('/github/callback',
   passport.authenticate('github', {
     failureRedirect: '/login',
-    successRedirect: 'https://asknovanew.netlify.app/generate'
+    successRedirect: 'https://asknovanew.netlify.app/generate',
   })
 );
 

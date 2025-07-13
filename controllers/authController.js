@@ -2,8 +2,7 @@ export const getCurrentUser = (req, res) => {
   if (!req.isAuthenticated()) {
     return res.status(401).json({ user: null });
   }
-
-  res.json(req.user);
+  res.json({ user: req.user });
 };
 
 export const logoutUser = (req, res) => {

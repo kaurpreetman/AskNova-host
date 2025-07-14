@@ -11,40 +11,32 @@ passport.use(new GitHubStrategy({
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     let user = await User.findOne({ githubId: profile.id });
+    if (user) return done(null, user);
 
-    if (user) {
-     
-      return done(null, user);
-    }
+    let email = profile.emails?.[0]?.value || '';
 
-   
-    let email = '';
-    if (profile.emails && profile.emails.length > 0) {
-      email = profile.emails[0].value;
-    } else {
+    if (!email) {
       try {
         const { data: emails, headers } = await axios.get('https://api.github.com/user/emails', {
           headers: {
             Authorization: `token ${accessToken}`,
-            Accept: 'application/vnd.github+json'
+            Accept: 'application/vnd.github+json',
           }
         });
 
-        console.log('GitHub API Rate Limit Remaining:', headers['x-ratelimit-remaining']);
-        const primaryEmail = emails.find(email => email.primary && email.verified);
-        email = primaryEmail ? primaryEmail.email : '';
-      } catch (emailErr) {
-        console.error('GitHub Email Fetch Error:', emailErr.message);
+        console.log('GitHub Rate Limit Remaining:', headers['x-ratelimit-remaining']);
+        const primary = emails.find(e => e.primary && e.verified);
+        email = primary?.email || '';
+      } catch (err) {
+        console.error('Email fetch error:', err.message);
       }
     }
-
-    const avatarUrl = profile.photos?.[0]?.value || '';
 
     user = await User.create({
       githubId: profile.id,
       username: profile.username,
       email,
-      avatarUrl,
+      avatarUrl: profile.photos?.[0]?.value || '',
     });
 
     return done(null, user);
@@ -55,7 +47,6 @@ passport.use(new GitHubStrategy({
 }));
 
 passport.serializeUser((user, done) => done(null, user.id));
-
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await User.findById(id);
